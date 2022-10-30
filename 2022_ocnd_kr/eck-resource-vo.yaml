@@ -1,0 +1,65 @@
+elasticsearch:
+  adminPassword: tacoword
+  count: 3
+  enabled: true
+  http:
+    service:
+      spec:
+        ports:
+        - name: https
+          port: 9200
+          targetPort: 9200
+        type: ClusterIP
+  image:
+    tag: 7.5.1
+  nodeSets:
+    client:
+      count: 1
+      enabled: false
+      javaOpts: -Xms1g -Xmx1g
+      limitCpu: 2
+      limitMem: 2Gi
+      nodeSelector:
+        taco-lma: enabled
+      pvc:
+        size: 0.5Gi
+        storageClassName: taco-storage
+    hotdata:
+      count: 1
+      enabled: true
+      javaOpts: -Xms1g -Xmx1g
+      limitCpu: 1
+      limitMem: 2Gi
+      nodeSelector:
+        taco-lma: enabled
+      pvc:
+        size: 5Gi
+        storageClassName: taco-storage
+    master:
+      count: 1
+      enabled: true
+      javaOpts: -Xms1g -Xmx1g
+      limitCpu: 1
+      limitMem: 2Gi
+      nodeSelector:
+        taco-lma: enabled
+      pvc:
+        size: 5Gi
+        storageClassName: taco-storage
+    warmdata:
+      enabled: false
+kibana:
+  enabled: true
+  http:
+    service:
+      spec:
+        ports:
+        - name: http
+          port: 5601
+          targetPort: 5601
+        type: ClusterIP
+    tls:
+      selfSignedCertificate:
+        disabled: true
+  image:
+    tag: 7.5.1
