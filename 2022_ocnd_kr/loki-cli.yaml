@@ -1,0 +1,17 @@
+---
+# sudo docker run -d --name=loki -p 3100:3100 grafana/loki
+apiVersion: v1
+kind: Pod
+metadata:
+  name: loki-cli
+  # namespace: loki-test
+  labels:
+    app.kubernetes.io/name: loki
+spec:
+  containers:
+  - name: logcli
+    image: grafana/logcli:main-1c3f5d0-amd64 
+    command: ['sh', '-c', 'echo "Hello, Kubernetes!" && sleep 36000']
+    env:
+      - name: LOKI_ADDR
+        value: http://loki:3100

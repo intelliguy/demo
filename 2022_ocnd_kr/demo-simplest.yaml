@@ -1,0 +1,48 @@
+fluentbit:
+  enabled: true
+
+  outputs:
+    es:
+    - name: demo-es
+      host: eck-elasticsearch-es-http
+      port: 9200
+
+      dedicatedUser:
+        username: demo
+        password: demopassword
+        elasticPasswordSecret: eck-elasticsearch-es-elastic-user
+      
+      template:
+        enabled: false
+
+    loki: 
+    - name: demo-loki
+      host: loki
+      port: 3100
+
+  targetLogs:
+  - tag: kube.*
+    bufferChunkSize: 2M
+    bufferMaxSize: 5M
+    memBufLimit: 20MB
+    do_not_store_as_default: false
+    es_name: demo-es
+    loki_name: demo-loki
+    index: container-simple
+    multi_index:
+    - index: system-simple
+      es_name: demo-es
+      key: $kubernetes['namespace_name']
+      value: kube-system|taco-system
+    parser: docker
+    path: /var/log/containers/*.log
+    type: kubernates
+    extraArgs:
+      multilineParser: docker, cri
+
+  - tag: syslog.*
+    loki_name: demo-loki
+    index: syslog-simple
+    parser: syslog-rfc5424
+    path: /var/log/syslog
+    type: syslog
